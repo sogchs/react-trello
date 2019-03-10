@@ -9,9 +9,9 @@ class App extends Component {
     return (
       <div className="App">
        <Header />
-       <Board />
        <Switch>
-            <Route exact path='/cardForm' component={CardForm}/>
+        <Route exact path='/' component={Board}/>
+        <Route exact path='/cardForm' component={CardForm}/>
       </Switch>
       </div>
     );
