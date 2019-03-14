@@ -1,0 +1,64 @@
+.card-column{
+    background-color: darkgray;
+    padding: 9px;
+    margin: 20px 10px;
+    border-radius: 5px;
+    width: 310px;
+}
+
+.abc {
+    font-size: 2em;
+    padding: 1em;
+}
+
+.custom-file-input {
+    position: absolute;
+    height: 6em;
+    width: 6em;
+}
+
+.ccff{
+    height: auto;
+}
+
+.bot{
+    padding: 0;
+}
+
+.img-upload{
+    width: 6em;
+    height: 6em;
+    border-radius: 5px;
+    border: 1px solid cornflowerblue;
+    object-fit: cover;
+    margin-right: 1em;
+}
+
+.close{
+    position: absolute;
+    margin-left: 263px;
+    color: red;
+}
+
+.add-card{
+    color: aliceblue;
+    border: 1px solid aliceblue;
+    border-radius: 5px;
+    padding: 0.4em;
+    text-decoration: none !important;
+}
+
+.body-column{
+    display: flex !important;
+    width: fit-content;
+}
+
+.card-add-column{
+    background-color: aliceblue;
+    padding: 9px;
+    margin: 20px 10px;
+    border-radius: 5px;
+    width: 310px;
+    height: fit-content;
+    border: 1px solid darkgray; 
+}

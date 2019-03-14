@@ -1,33 +1,36 @@
 import React, { Component } from 'react';
 import Column from './Column';
-import { getColumns } from '../services/TrelloService'
-import { Link } from 'react-router-dom';
+import trelloService from '../services/TrelloService'
+import ColumnForm from './ColumnForm';
+
+
 
 
 class Board extends Component {
-  constructor(props){
-    super(props)
 
-    this.state = {
+    state = {
         columns: [],
         cards: []
     };
-  }
+  
 
 
 
+fetchColumns = () => {
+  trelloService.getColumns()
+    .then(columns => this.setState({ columns }))
+}
 
-componentDidMount(){
-    getColumns().then(columns => this.setState({columns}));
+componentDidMount() {
+  this.fetchColumns();
 }
 
 render (){
     return(
-        <div className="container d-flex">
-        {this.state.columns.map((col, index) => 
-            <Column key={index} {...col} /> )}
-        
-        <Link to={`/cardForm`}>+Add Card</Link>
+        <div className="body-column">
+        {this.state.columns.map(column => 
+            <Column key={column.id} {...column} fetchColumns={this.fetchColumns}/> )}
+            <ColumnForm nextPosition={this.state.columns.length + 1} fetchColumns={this.fetchColumns}/>
         </div>
     )
 }}

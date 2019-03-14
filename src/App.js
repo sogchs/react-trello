@@ -11,7 +11,7 @@ class App extends Component {
        <Header />
        <Switch>
         <Route exact path='/' component={Board}/>
-        <Route exact path='/cardForm' component={CardForm}/>
+        <Route exact path='/cardForm/:id' component={props => <CardForm {...props}/>}/>
       </Switch>
       </div>
     );

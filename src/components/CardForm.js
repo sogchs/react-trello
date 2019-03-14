@@ -1,11 +1,16 @@
 import React, {Component} from 'react';
 import { Redirect } from 'react-router-dom';
 import FormField from './FormField';
+import trelloService from '../services/TrelloService';
+
+
+// const queryString = require('query-string');
 
 const validators = {
     title:     v => v.length > 0,
     description:    v => v.length > 0,
-    position: v => v.length > 0
+    position: v => v.length > 0,
+    column: v => v.length > 0
   }
 class CardForm extends Component {
 
@@ -14,7 +19,9 @@ class CardForm extends Component {
           title: '',
           description: '',
           position: '',
-          column: ''
+          column: this.props.match.params.id,
+          attach:'',
+          filePreview:''
         },
         errors: {
           title: true,
@@ -22,26 +29,25 @@ class CardForm extends Component {
           position: true
         },
         touch: {},
-        toCards: false
+        onSubmit: false
       }
 
       handleChange = (e) => {
-        const { name, value, type, checked } = e.target
+        const { name, value, files } = e.target;
     
-        const error = {
-          [name]: !validators[e.target.name]
-        }
+        const isValid = validators[name] === undefined || validators[name](value);
     
         this.setState({
           card: {
             ...this.state.card,
-            [name]: type == 'checkbox' ? checked : value
+            [name]: (files && files[0]) ? files[0] : value
           },
           errors: {
             ...this.state.errors,
-            ...error
-          }
-        });
+            [name]: !isValid
+          } 
+          
+        })
       }
 
       handleBlur = (e) => {
@@ -53,24 +59,35 @@ class CardForm extends Component {
         })
       }
     
-      handleSubmit = (e) => {
-        e.preventDefault();
-    
-        this.setState({ toCards: true }, () => this.props.onAddCard({ ...this.state.card }));
-      };
+
+
+    postCard = (e) => {
+      e.preventDefault();
+  
+      const cardData = {
+        ...this.state.card
+      }
+  
+      trelloService.postCard(cardData)
+        .then(() => this.setState({ onSubmit: true }))
+    }
+
     
 
 render(){
-    if (this.state.toUsers) {
-        return <Redirect exact to="/"/>
-      }
+  
+
+  if (this.state.onSubmit) {
+    return (
+    <Redirect to='/' />
+    )} else {
 
       const isError = Object.values(this.state.errors).some(error => error);
-
+    
 
     return(
         <div className="container col-4 mt-5">
-        <form onSubmit={this.handleSubmit}>
+        <form onSubmit={this.postCard}>
           <FormField title="Title" name="title" value={this.state.card.title}
             onChange={this.handleChange} icon="fas fa-user" error={this.state.errors.title}
             onBlur={this.handleBlur} touch={this.state.touch.title}/>
@@ -83,38 +100,30 @@ render(){
             onChange={this.handleChange} icon="fas fa-key" type="Number"
             error={this.state.errors.position} onBlur={this.handleBlur} touch={this.state.touch.position} />
 
+
+          {this.state.card.attach && <img className="img-upload" src={URL.createObjectURL(this.state.card.attach)} alt="..."/>}
+
+            <button type="button" className="bot btn btn-outline-primary">
+              <input 
+                  type="file" 
+                  className="custom-file-input" 
+                  name="attach" id="attach" 
+                  aria-describedby="attach"
+                  onChange={this.handleChange}
+                  onBlur={this.handleBlur}
+                  lang="es"/> <i className="abc fas fa-plus"></i>
+            </button>
+
           <div className="control">
-            <button className="button is-info" disabled={isError}>
-              <span className="icon is-small">
-                <i className="fas fa-check"></i>
-              </span>
+            <button className="btn btn-primary mt-3" disabled={isError}>
               <span>+ Add</span>
             </button>
           </div>
         </form>
       </div>
-        // <form className="container col-4 mt-5">
-        //     <h2>Add new Card</h2>
-        //     <div className="form-group">
-        //         <label htmlFor="exampleInputEmail1">Title</label>
-        //         <input type="text" className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter title"/>
-        //     </div>
-        //     <div className="form-group">
-        //         <label htmlFor="exampleInputPassword1">Description</label>
-        //         <textarea type="text" className="form-control" id="exampleInputPassword1" placeholder="Article Description"/>
-        //     </div>
-        //     <div className="form-group">
-        //         <label htmlFor="exampleInputPassword1">Position</label>
-        //         <input type="Number" className="form-control" id="exampleInputPassword1" placeholder="Number"/>
-        //     </div>
-        //     <div className="form-group">
-        //         <label htmlFor="exampleInputPassword1">Objetc Id Column</label>
-        //         <input type="text" className="form-control" id="exampleInputPassword1" placeholder="Password"/>
-        //     </div>
-        //     <button type="submit" className="btn btn-primary">Submit</button>
-        // </form>
+
     )
-}
+}}
 }
 
 export default CardForm;
